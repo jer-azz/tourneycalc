@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="sv"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{% block title %}TourneyCalc{% endblock %}</title>
+<link rel="stylesheet" href="{{ url_for('static', filename='css/base.css') }}">
+<link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}"></head><body>
+<header class="site-header"><div class="container">
+<a class="brand" href="{{ url_for('home') }}">TourneyCalc</a>
+<nav class="site-nav">
+<a href="{{ url_for('t.index') }}" class="{% if request.endpoint=='t.index' %}active{% endif %}">Turneringar</a>
+{% if current_user.is_authenticated and current_user.is_admin %}<a href="{{ url_for('admin.dashboard') }}" class="{% if request.endpoint and request.endpoint.startswith('admin.') %}active{% endif %}">Admin</a>{% endif %}
+{% if current_user.is_authenticated %}<span class="user-chip">{{ current_user.display_name }}{% if current_user.is_admin %} <span class="badge badge-admin">admin</span>{% endif %}</span>
+<a href="{{ url_for('auth.logout') }}">Logga ut</a>
+{% else %}<a href="{{ url_for('auth.login') }}">Logga in</a>
+<a href="{{ url_for('auth.register') }}">Skapa konto</a>{% endif %}
+</nav></div></header>
+<main class="container">
+{% with messages = get_flashed_messages(with_categories=true) %}{% if messages %}<ul class="flashes">{% for cat, msg in messages %}<li class="flash flash-{{ cat }}">{{ msg }}</li>{% endfor %}</ul>{% endif %}{% endwith %}
+{% block content %}{% endblock %}
+</main>
+<footer class="site-footer"><div class="container">TourneyCalc</div></footer>
+</body></html>

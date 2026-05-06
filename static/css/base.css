@@ -1,0 +1,22 @@
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: 'Georgia', serif; background-color: #f4f1eb; color: #2c2c2c; font-size: 1rem; line-height: 1.7; }
+.site-wrapper { max-width: 860px; margin: 0 auto; padding: 0 1.5rem; }
+header { border-bottom: 2px solid #3b2e1e; padding: 2rem 0 1rem; margin-bottom: 2.5rem; }
+header h1 { font-size: 1.6rem; font-weight: normal; letter-spacing: 0.08em; text-transform: uppercase; color: #3b2e1e; }
+header p.tagline { font-size: 0.85rem; color: #7a6a55; margin-top: 0.25rem; letter-spacing: 0.05em; }
+nav { margin-top: 1rem; }
+nav a { display: inline-block; margin-right: 1.5rem; text-decoration: none; font-size: 0.85rem; letter-spacing: 0.06em; text-transform: uppercase; color: #5a4535; border-bottom: 1px solid transparent; padding-bottom: 2px; transition: border-color 0.2s; }
+nav a:hover, nav a.active { border-bottom-color: #3b2e1e; color: #3b2e1e; }
+main { padding-bottom: 4rem; }
+h2 { font-size: 1.15rem; font-weight: normal; letter-spacing: 0.05em; text-transform: uppercase; color: #3b2e1e; margin-bottom: 1rem; border-bottom: 1px solid #c9bfad; padding-bottom: 0.4rem; }
+p { margin-bottom: 1rem; color: #3a3530; }
+.event-list { display: flex; flex-direction: column; gap: 1.5rem; margin-top: 1.5rem; }
+.event-card { border: 1px solid #c9bfad; background: #faf8f3; padding: 1.25rem 1.5rem; }
+.event-card .event-date { font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase; color: #7a6a55; margin-bottom: 0.3rem; }
+.event-card h3 { font-size: 1rem; font-weight: normal; color: #3b2e1e; margin-bottom: 0.4rem; }
+.event-card p { font-size: 0.9rem; margin: 0; }
+.event-card .event-meta { font-size: 0.8rem; color: #7a6a55; margin-top: 0.6rem; }
+footer { border-top: 1px solid #c9bfad; padding: 1.5rem 0; font-size: 0.78rem; color: #a09080; letter-spacing: 0.04em; }
+.about-image { margin: 2rem 0 0; text-align: center; }
+.about-image img { max-width: 100%; height: auto; border: 1px solid #c9bfad; background: #faf8f3; }
+.about-image figcaption { font-size: 0.8rem; color: #7a6a55; margin-top: 0.4rem; }

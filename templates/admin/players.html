@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block content %}
+<header class="page-head"><h1>Spelare</h1>
+<a class="btn btn-primary" href="{{ url_for('admin.player_new') }}">+ Lagg till spelare</a></header>
+{% if players %}<table class="data"><thead><tr><th>Anvandarnamn</th><th>Visningsnamn</th><th>E-post</th><th>Faction</th><th>Roll</th><th></th></tr></thead><tbody>
+{% for p in players %}<tr><td>@{{ p.username }}</td><td>{{ p.display_name }}</td><td>{{ p.email }}</td>
+<td>{{ p.faction or '-' }}</td>
+<td>{% if p.is_admin %}<span class="badge badge-admin">admin</span>{% else %}<span class="badge badge-muted">spelare</span>{% endif %}</td>
+<td><a class="btn btn-sm" href="{{ url_for('admin.player_edit', pid=p.id) }}">Redigera</a>
+{% if p.id != current_user.id %}<form method="post" action="{{ url_for('admin.player_delete', pid=p.id) }}" style="display:inline" onsubmit="return confirm('Ta bort {{ p.display_name }}?');"><button class="btn btn-sm btn-danger" type="submit">Ta bort</button></form>{% endif %}</td>
+</tr>{% endfor %}</tbody></table>
+{% else %}<p class="muted">Inga spelare an.</p>{% endif %}
+{% endblock %}

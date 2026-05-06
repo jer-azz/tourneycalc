@@ -1,0 +1,5 @@
+{% extends "base.html" %}{% block content %}
+<h2>Turneringar</h2>
+{% if tournaments %}<div class="card-grid">{% for t in tournaments %}{% include "tournaments/_card.html" %}{% endfor %}</div>
+{% else %}<p class="muted">Inga turneringar an.</p>{% endif %}
+{% endblock %}

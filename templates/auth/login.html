@@ -1,0 +1,8 @@
+{% extends "base.html" %}{% block content %}
+<h2>Logga in</h2>
+<form class="stack" method="post">
+<label>Anvandarnamn eller e-post <input name="username" required autofocus></label>
+<label>Losenord <input type="password" name="password" required></label>
+<div class="btn-row"><button class="btn btn-primary" type="submit">Logga in</button>
+<a class="btn" href="{{ url_for('auth.register') }}">Skapa konto</a></div></form>
+{% endblock %}

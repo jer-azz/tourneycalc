@@ -1,0 +1,10 @@
+{% extends "base.html" %}{% block content %}
+<h2>Skapa konto</h2>
+<p class="muted">Forsta registrerade blir automatiskt admin.</p>
+<form class="stack" method="post">
+<label>Anvandarnamn <input name="username" required></label>
+<label>Visningsnamn <input name="display_name"></label>
+<label>E-post <input type="email" name="email" required></label>
+<label>Losenord <input type="password" name="password" required minlength="6"></label>
+<button class="btn btn-primary" type="submit">Skapa konto</button></form>
+{% endblock %}

@@ -1,0 +1,7 @@
+<a class="card" href="{{ url_for('t.detail', slug=t.slug) }}">
+<div class="card-head"><span class="badge {{ t.state.css }}">{{ t.state.label }}</span>
+<span class="muted">{{ t.date }}</span></div>
+<h3>{{ t.name }}</h3>
+<p class="muted">{{ t.location }}</p>
+<p class="muted">{{ t.num_rounds }} rundor &middot; {{ t.points_limit }} pts &middot; {{ t.registrations|length }} anmalda</p>
+</a>

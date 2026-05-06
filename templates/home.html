@@ -1,0 +1,12 @@
+{% extends "base.html" %}{% block content %}
+<section class="hero"><h1>TourneyCalc</h1>
+<p>Hantera anmalningar, seedning och resultat.</p>
+{% if not current_user.is_authenticated %}<div class="btn-row" style="justify-content:center">
+<a class="btn btn-primary" href="{{ url_for('auth.register') }}">Skapa konto</a>
+<a class="btn" href="{{ url_for('auth.login') }}">Logga in</a></div>{% endif %}</section>
+<h2>Pagaende och oppna</h2>
+{% if active %}<div class="card-grid">{% for t in active %}{% include "tournaments/_card.html" %}{% endfor %}</div>{% else %}<p class="muted">Inga aktiva turneringar.</p>{% endif %}
+<h2>Kommande</h2>
+{% if upcoming %}<div class="card-grid">{% for t in upcoming %}{% include "tournaments/_card.html" %}{% endfor %}</div>{% else %}<p class="muted">Inga kommande an.</p>{% endif %}
+{% if finished %}<h2>Senast avslutade</h2><div class="card-grid">{% for t in finished %}{% include "tournaments/_card.html" %}{% endfor %}</div>{% endif %}
+{% endblock %}

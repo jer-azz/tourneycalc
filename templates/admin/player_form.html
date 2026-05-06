@@ -1,0 +1,16 @@
+{% extends "base.html" %}{% block content %}
+<h2>{% if player %}Redigera {{ player.display_name }}{% else %}Lagg till spelare{% endif %}</h2>
+<form class="stack" method="post">
+{% if not player %}<label>Anvandarnamn <input name="username" required autofocus></label>
+<label>E-post <input type="email" name="email" required></label>
+{% else %}<label>Anvandarnamn <input value="@{{ player.username }}" disabled></label>
+<label>E-post <input type="email" name="email" value="{{ player.email }}" required></label>{% endif %}
+<label>Visningsnamn <input name="display_name" value="{{ player.display_name if player else '' }}"></label>
+<label>Faction <input name="faction" value="{{ player.faction if player else '' }}"></label>
+<label>{% if player %}Nytt losenord (lamna tomt for att behalla){% else %}Losenord{% endif %}
+<input type="password" name="password" {% if not player %}required minlength="6"{% endif %}></label>
+{% if not player or player.id != current_user.id %}
+<label class="checkbox-row"><input type="checkbox" name="is_admin" value="1" {% if player and player.is_admin %}checked{% endif %}> Administrator</label>{% endif %}
+<div class="btn-row"><button class="btn btn-primary" type="submit">{% if player %}Spara{% else %}Skapa{% endif %}</button>
+<a class="btn" href="{{ url_for('admin.players') }}">Avbryt</a></div></form>
+{% endblock %}

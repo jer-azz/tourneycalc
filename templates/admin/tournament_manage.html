@@ -1,0 +1,56 @@
+{% extends "base.html" %}{% block content %}
+<header class="page-head"><div>
+<span class="badge {{ t.state.css }}">{{ t.state.label }}</span>
+<h1>{{ t.name }}</h1>
+<p class="muted">{{ t.date }} &middot; {{ t.location }} &middot; {{ t.num_rounds }} rundor</p></div>
+<a class="btn" href="{{ url_for('t.detail', slug=t.slug) }}">Visa publik sida</a></header>
+<div class="lifecycle"><h3>Livscykel</h3>
+{% if t.state.value == 'draft' %}<p class="muted">Utkast. Oppna anmalan nar du ar redo.</p>
+<form method="post" action="{{ url_for('admin.tournament_state', slug=t.slug) }}">
+<input type="hidden" name="state" value="registration">
+<button class="btn btn-primary">Oppna anmalan</button></form>
+{% elif t.state.value == 'registration' %}<p class="muted">Anmalan oppen.</p>
+<form method="post" action="{{ url_for('admin.tournament_state', slug=t.slug) }}">
+<input type="hidden" name="state" value="in_progress">
+<button class="btn btn-primary">Stang anmalan och starta turnering</button></form>
+{% elif t.state.value == 'in_progress' %}<p class="muted">Pagar.</p>
+{% if t.rounds|length < t.num_rounds %}<form method="post" action="{{ url_for('admin.generate_round', slug=t.slug) }}">
+<button class="btn btn-primary">{% if t.rounds|length == 0 %}Generera runda 1 (slumpmassigt){% else %}Generera runda {{ t.rounds|length + 1 }} (Schweizer){% endif %}</button></form>
+{% else %}<form method="post" action="{{ url_for('admin.tournament_state', slug=t.slug) }}">
+<input type="hidden" name="state" value="finished">
+<button class="btn btn-primary">Avsluta turnering</button></form>{% endif %}
+{% else %}<p class="muted">Avslutad och last.</p>{% endif %}
+</div>
+<h2>Anmalda spelare ({{ t.registrations|length }})</h2>
+{% if t.state.value in ['draft', 'registration'] %}
+{% set registered_ids = t.registrations | map(attribute='player_id') | list %}
+<form method="post" action="{{ url_for('admin.add_player_to_tournament', slug=t.slug) }}" style="margin-bottom:1.5rem; display:flex; gap:0.6rem; align-items:flex-end;">
+<label style="font-size:0.78rem; letter-spacing:0.06em; text-transform:uppercase; color:var(--c-muted); display:flex; flex-direction:column; gap:0.3rem; min-width:240px;">
+Lagg till spelare manuellt
+<select name="player_id" required>
+<option value="">- valj spelare -</option>
+{% for p in all_players if p.id not in registered_ids %}<option value="{{ p.id }}">{{ p.display_name }} (@{{ p.username }})</option>{% endfor %}
+</select></label>
+<button class="btn">Lagg till</button></form>{% endif %}
+{% if t.registrations %}<table class="data"><thead><tr><th>#</th><th>Spelare</th><th>Faction</th><th>Status</th><th></th></tr></thead><tbody>
+{% for r in t.registrations %}<tr {% if r.dropped %}class="row-muted"{% endif %}>
+<td>{{ loop.index }}</td><td>{{ r.player.display_name }} <span class="muted">@{{ r.player.username }}</span></td>
+<td>{{ r.player.faction or '-' }}</td>
+<td>{% if r.dropped %}<span class="badge badge-muted">Avhoppad</span>{% elif r.paid %}<span class="badge badge-done">Betalt</span>{% else %}<span class="badge badge-info">Anmald</span>{% endif %}</td>
+<td><form method="post" action="{{ url_for('admin.toggle_paid', slug=t.slug, rid=r.id) }}" style="display:inline"><button class="btn btn-sm">{% if r.paid %}Markera obetald{% else %}Markera betald{% endif %}</button></form>
+<form method="post" action="{{ url_for('admin.drop_player', slug=t.slug, rid=r.id) }}" style="display:inline"><button class="btn btn-sm">{% if r.dropped %}Aterinsatt{% else %}Hoppa av{% endif %}</button></form></td>
+</tr>{% endfor %}</tbody></table>
+{% else %}<p class="muted">Inga anmalda an.</p>{% endif %}
+<h2>Rundor</h2>
+{% if t.rounds %}{% for rnd in t.rounds %}
+<h3>Runda {{ rnd.number }} {% if rnd.state.value == 'active' %}<span class="badge badge-active">Aktiv</span>{% else %}<span class="badge badge-done">Klar</span>{% endif %}</h3>
+<table class="data"><thead><tr><th>Bord</th><th>Spelare 1</th><th>Spelare 2</th><th class="num">TP</th><th class="num">KP</th><th></th></tr></thead><tbody>
+{% for m in rnd.matches %}<tr><td>{{ m.table_number }}</td>
+<td>{{ m.player1.display_name }}</td>
+<td>{% if m.player2 %}{{ m.player2.display_name }}{% else %}<em>BYE</em>{% endif %}</td>
+<td class="num">{% if m.p1_tp is not none %}{{ '%.1f' % m.p1_tp }}{% if m.player2 %} - {{ '%.1f' % (m.p2_tp or 0) }}{% endif %}{% else %}-{% endif %}</td>
+<td class="num">{% if m.p1_kp is not none %}{{ '%.1f' % m.p1_kp }}{% if m.player2 %} - {{ '%.1f' % (m.p2_kp or 0) }}{% endif %}{% else %}-{% endif %}</td>
+<td>{% if m.player2 %}<a class="btn btn-sm" href="{{ url_for('t.match_report', mid=m.id) }}">Rapportera</a>{% endif %}</td>
+</tr>{% endfor %}</tbody></table>
+{% endfor %}{% else %}<p class="muted">Inga rundor genererade an.</p>{% endif %}
+{% endblock %}

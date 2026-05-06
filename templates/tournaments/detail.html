@@ -1,0 +1,67 @@
+{% extends "base.html" %}{% block title %}{{ t.name }}{% endblock %}{% block content %}
+<header class="page-head"><div>
+<span class="badge {{ t.state.css }}">{{ t.state.label }}</span>
+<h1>{{ t.name }}</h1>
+<p class="muted">{{ t.date }} &middot; {{ t.location }} &middot; {{ t.num_rounds }} rundor &middot; {{ t.points_limit }} pts</p></div>
+{% if current_user.is_authenticated and current_user.is_admin %}<a class="btn" href="{{ url_for('admin.tournament_manage', slug=t.slug) }}">Hantera</a>{% endif %}
+</header>
+<nav class="tabs">
+<a class="tab {% if tab=='overview' %}active{% endif %}" href="?tab=overview">Oversikt</a>
+<a class="tab {% if tab=='players' %}active{% endif %}" href="?tab=players">Spelare ({{ t.registrations|length }})</a>
+<a class="tab {% if tab=='pairings' %}active{% endif %}" href="?tab=pairings">Pairings</a>
+<a class="tab {% if tab=='standings' %}active{% endif %}" href="?tab=standings">Stallning</a>
+</nav>
+<section>
+{% if tab == 'overview' %}
+{% if t.description %}<p>{{ t.description }}</p>{% endif %}
+<dl class="meta">
+<dt>Datum</dt><dd>{{ t.date }}</dd>
+<dt>Plats</dt><dd>{{ t.location }}</dd>
+<dt>Rundor</dt><dd>{{ t.num_rounds }}</dd>
+<dt>Poang/lista</dt><dd>{{ t.points_limit }}</dd>
+<dt>Vinstpoang</dt><dd>W {{ t.win_tp }} / D {{ t.draw_tp }} / L {{ t.loss_tp }}</dd>
+</dl>
+{% if current_user.is_authenticated %}
+{% if t.state.value == 'registration' %}
+{% if is_registered %}<p class="muted">Du ar anmald.</p>
+<form method="post" action="{{ url_for('t.unregister', slug=t.slug) }}"><button class="btn">Avanmal</button></form>
+{% else %}<h2>Anmal dig</h2>
+<form method="post" action="{{ url_for('t.register', slug=t.slug) }}" class="stack">
+<label>Armelista (valfritt) <textarea name="army_list" rows="5"></textarea></label>
+<button class="btn btn-primary">Anmal mig</button></form>{% endif %}
+{% elif t.state.value == 'draft' %}<p class="muted">Anmalan ar inte oppen an.</p>
+{% elif t.state.value == 'in_progress' %}<p class="muted">Turneringen pagar.</p>
+{% else %}<p class="muted">Avslutad.</p>{% endif %}
+{% else %}<p><a href="{{ url_for('auth.login') }}">Logga in</a> for att anmala dig.</p>{% endif %}
+{% elif tab == 'players' %}
+{% if t.registrations %}<table class="data"><thead><tr><th>#</th><th>Spelare</th><th>Faction</th><th>Status</th></tr></thead><tbody>
+{% for r in t.registrations %}<tr {% if r.dropped %}class="row-muted"{% endif %}>
+<td>{{ loop.index }}</td><td>{{ r.player.display_name }} <span class="muted">@{{ r.player.username }}</span></td>
+<td>{{ r.player.faction or '-' }}</td>
+<td>{% if r.dropped %}<span class="badge badge-muted">Avhoppad</span>{% elif r.paid %}<span class="badge badge-done">Betalt</span>{% else %}<span class="badge badge-info">Anmald</span>{% endif %}</td>
+</tr>{% endfor %}</tbody></table>
+{% else %}<p class="muted">Inga anmalda an.</p>{% endif %}
+{% elif tab == 'pairings' %}
+{% if t.rounds %}{% for rnd in t.rounds %}
+<h2>Runda {{ rnd.number }} {% if rnd.state.value == 'active' %}<span class="badge badge-active">Aktiv</span>{% else %}<span class="badge badge-done">Klar</span>{% endif %}</h2>
+<table class="data"><thead><tr><th>Bord</th><th>Spelare 1</th><th>Spelare 2</th><th class="num">TP</th><th class="num">KP</th><th></th></tr></thead><tbody>
+{% for m in rnd.matches %}<tr><td>{{ m.table_number }}</td>
+<td>{{ m.player1.display_name }}</td>
+<td>{% if m.player2 %}{{ m.player2.display_name }}{% else %}<em>BYE</em>{% endif %}</td>
+<td class="num">{% if m.p1_tp is not none %}{{ '%.1f' % m.p1_tp }}{% if m.player2 %} - {{ '%.1f' % (m.p2_tp or 0) }}{% endif %}{% else %}-{% endif %}</td>
+<td class="num">{% if m.p1_kp is not none %}{{ '%.1f' % m.p1_kp }}{% if m.player2 %} - {{ '%.1f' % (m.p2_kp or 0) }}{% endif %}{% else %}-{% endif %}</td>
+<td>{% if current_user.is_authenticated and m.player2 and (current_user.is_admin or current_user.id in [m.player1_id, m.player2_id]) %}<a class="btn btn-sm" href="{{ url_for('t.match_report', mid=m.id) }}">Rapportera</a>{% endif %}</td>
+</tr>{% endfor %}</tbody></table>
+{% endfor %}{% else %}<p class="muted">Inga rundor genererade an.</p>{% endif %}
+{% elif tab == 'standings' %}
+{% if standings %}<table class="data"><thead><tr><th>#</th><th>Spelare</th><th>W-L-D</th><th class="num">TP</th><th class="num">KP</th><th class="num">SoS</th></tr></thead><tbody>
+{% for s in standings %}<tr {% if s.dropped %}class="row-muted"{% endif %}>
+<td>{{ s.rank }}</td><td>{{ s.player.display_name }}{% if s.dropped %} <span class="badge badge-muted">drop</span>{% endif %}</td>
+<td>{{ s.wins }}-{{ s.losses }}-{{ s.draws }}</td>
+<td class="num">{{ '%.1f' % s.tp }}</td><td class="num">{{ '%.1f' % s.kp }}</td><td class="num">{{ '%.1f' % s.sos }}</td>
+</tr>{% endfor %}</tbody></table>
+<p class="muted">Tiebreakers: TP, KP, Strength of Schedule.</p>
+{% else %}<p class="muted">Inga resultat an.</p>{% endif %}
+{% endif %}
+</section>
+{% endblock %}

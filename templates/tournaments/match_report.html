@@ -1,0 +1,18 @@
+{% extends "base.html" %}{% block content %}
+<h2>Rapportera match</h2>
+<p class="muted">{{ m.round.tournament.name }} - Runda {{ m.round.number }} &middot; Bord {{ m.table_number }}</p>
+<form class="stack" method="post">
+<fieldset style="border:1px solid var(--c-line); background:var(--c-paper); padding:1rem 1.25rem;">
+<legend style="padding:0 0.5rem; color:var(--c-ink);">{{ m.player1.display_name }}</legend>
+<label>TP <input type="number" step="0.5" name="p1_tp" value="{{ m.p1_tp if m.p1_tp is not none else '' }}" required></label>
+<label>KP <input type="number" step="0.5" name="p1_kp" value="{{ m.p1_kp if m.p1_kp is not none else '' }}" required></label>
+</fieldset>
+{% if m.player2 %}<fieldset style="border:1px solid var(--c-line); background:var(--c-paper); padding:1rem 1.25rem;">
+<legend style="padding:0 0.5rem; color:var(--c-ink);">{{ m.player2.display_name }}</legend>
+<label>TP <input type="number" step="0.5" name="p2_tp" value="{{ m.p2_tp if m.p2_tp is not none else '' }}" required></label>
+<label>KP <input type="number" step="0.5" name="p2_kp" value="{{ m.p2_kp if m.p2_kp is not none else '' }}" required></label>
+</fieldset>{% endif %}
+<div class="btn-row"><button class="btn btn-primary" type="submit">Spara</button>
+<a class="btn" href="{{ url_for('t.detail', slug=m.round.tournament.slug, tab='pairings') }}">Avbryt</a></div>
+</form>
+{% endblock %}

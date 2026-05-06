@@ -1,0 +1,13 @@
+{% extends "base.html" %}{% block content %}
+<header class="page-head"><div><h1>Admin</h1><p class="muted">{{ players_count }} spelare</p></div>
+<div class="btn-row"><a class="btn" href="{{ url_for('admin.players') }}">Spelare</a>
+<a class="btn btn-primary" href="{{ url_for('admin.tournament_new') }}">+ Ny turnering</a></div></header>
+<h2>Turneringar</h2>
+{% if tournaments %}<table class="data"><thead><tr><th>Status</th><th>Namn</th><th>Datum</th><th>Plats</th><th>Anmalda</th><th></th></tr></thead><tbody>
+{% for t in tournaments %}<tr><td><span class="badge {{ t.state.css }}">{{ t.state.label }}</span></td>
+<td>{{ t.name }}</td><td>{{ t.date }}</td><td>{{ t.location }}</td><td>{{ t.registrations|length }}</td>
+<td><a class="btn btn-sm" href="{{ url_for('admin.tournament_manage', slug=t.slug) }}">Hantera</a>
+<a class="btn btn-sm" href="{{ url_for('t.detail', slug=t.slug) }}">Visa</a></td>
+</tr>{% endfor %}</tbody></table>
+{% else %}<p class="muted">Inga turneringar an.</p>{% endif %}
+{% endblock %}
